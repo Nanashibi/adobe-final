@@ -1,0 +1,70 @@
+{
+    "metadata": {
+        "input_documents": [
+            "South of France - Things to Do.pdf",
+            "South of France - Tips and Tricks.pdf"
+        ],
+        "persona": "Knowledge Worker",
+        "job_to_be_done": "Extract insights and find connections across documents",
+        "processing_timestamp": "2025-08-19T16:21:10.962352"
+    },
+    "extracted_sections": [
+        {
+            "document": "South of France - Tips and Tricks.pdf",
+            "section_title": "General Packing Tips and Tricks",
+            "importance_rank": 1,
+            "page_number": 2
+        },
+        {
+            "document": "South of France - Tips and Tricks.pdf",
+            "section_title": "Special Considerations",
+            "importance_rank": 2,
+            "page_number": 7
+        },
+        {
+            "document": "South of France - Tips and Tricks.pdf",
+            "section_title": "Tips and Tricks for Packing",
+            "importance_rank": 3,
+            "page_number": 8
+        },
+        {
+            "document": "South of France - Things to Do.pdf",
+            "section_title": "Relaxation and Wellness",
+            "importance_rank": 4,
+            "page_number": 7
+        },
+        {
+            "document": "South of France - Things to Do.pdf",
+            "section_title": "Shopping and Markets",
+            "importance_rank": 5,
+            "page_number": 8
+        }
+    ],
+    "subsection_analysis": [
+        {
+            "document": "South of France - Tips and Tricks.pdf",
+            "refined_text": "General Packing Tips and Tricks\n•\nLayering: The weather can vary, so pack layers to stay comfortable in diﬀerent\ntemperatures.\n•\nVersatile Clothing: Choose items that can be mixed and matched to create multiple\noutfits, helping you pack lighter.\n•\nPacking Cubes: Use packing cubes to organize your clothes and maximize suitcase\nspace.\n•\nRoll Your Clothes: Rolling clothes saves space and reduces wrinkles.\n•\nTravel-Sized Toiletries: Bring travel-sized toiletries to save space and comply with\nairline",
+            "page_number": 2
+        },
+        {
+            "document": "South of France - Tips and Tricks.pdf",
+            "refined_text": "•\nAdditional Tips: Bring a favorite stuﬀed animal or comfort item to help kids feel at\nhome. Consider packing a travel potty for young children.\n\nSpecial Considerations\nBeach Trips\n•\nBeach Bag: A large, waterproof bag for essentials.\n•\nTowels: Lightweight, quick-drying beach towels.\n•\nBeach Toys: Buckets, shovels, and toys for kids.\n•\nSnorkeling Gear: Bring your own gear for a better fit and comfort.\n•\nAdditional Tips: Pack a beach umbrella or tent for shade and a cooler for drinks and\nsnacks. C",
+            "page_number": 7
+        },
+        {
+            "document": "South of France - Tips and Tricks.pdf",
+            "refined_text": "•\nNotebook: Bring a notebook to jot down notes about the wines you taste.\n•\nWater Bottle: Stay hydrated by drinking water between tastings.\n•\nAdditional Tips: Plan your wine tour route in advance and consider hiring a driver or\njoining a guided tour to avoid drinking and driving.\n\nTips and Tricks for Packing\n•\nCheck the Weather: Check the forecast before packing to ensure appropriate clothing.\n•\nMake a Packing List: Create a list to ensure nothing is forgotten. Cross oﬀ items as you\npack.\n•\nUse ",
+            "page_number": 8
+        },
+        {
+            "document": "South of France - Things to Do.pdf",
+            "refined_text": "Relaxation and Wellness\nFor those seeking relaxation and rejuvenation, the South of France oﬀers plenty of options:\nSpa and Wellness Retreats\n•\nAix-en-Provence: Visit Thermes Sextius for thermal baths and massages.\n•\nBordeaux: Enjoy vinotherapy treatments at Les Sources de Caudalie.\n•\nVichy: Experience hydrotherapy and mud baths at Spa Vichy Célestins.\n•\nEvian-les-Bains: Relax at the Evian Resort, known for its mineral-rich waters.\n•\nSaint-Raphaël: Visit the Thalasso Spa for seawater treatments ",
+            "page_number": 7
+        },
+        {
+            "document": "South of France - Things to Do.pdf",
+            "refined_text": "Shopping and Markets\nThe South of France is a shopper's paradise, with a variety of markets, boutiques, and artisan\nshops:\nLocal Markets\n•\nNice: Explore the vibrant Cours Saleya Market.\n•\nCannes: Visit Marché Forville for fresh seafood and local produce.\n•\nAvignon: Discover local products at Marché des Halles.\n•\nAix-en-Provence: Browse the stalls at the daily market on Place Richelme.\n•\nSaint-Rémy-de-Provence: Enjoy the lively Wednesday market with local specialties.\n•\nUzès: Visit the Saturday m",
+            "page_number": 8
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+  "persona": {
+    "role": "Knowledge Worker"
+  },
+  "job_to_be_done": {
+    "task": "Extract insights and find connections across documents"
+  },
+  "documents": [
+    {
+      "filename": "South of France - Things to Do.pdf",
+      "type": "library"
+    },
+    {
+      "filename": "South of France - Tips and Tricks.pdf",
+      "type": "library"
+    }
+  ],
+  "upload_type": "hackathon_flow",
+  "current_document": "",
+  "llm_provider": "openai"
+}
