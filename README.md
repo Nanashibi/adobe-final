@@ -6,6 +6,9 @@ Multi-app workspace containing:
 - **server**: Bun + Hono API that orchestrates 1b runs and serves PDFs
 - **frontend**: Vite + React UI for upload, reading, insights, and recommendations
 
+### Adobe API Key
+ADOBE_EMBED_API_KEY=f991e8c76f754ecd8f599e223b57d885
+
 ### Repository structure
 ```
 1a/                 # Standalone PDF outline extractor (PyMuPDF)
