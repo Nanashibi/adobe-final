@@ -155,6 +155,19 @@ docker run --rm -v $(pwd)/input:/app/input:ro -v $(pwd)/output:/app/output --net
 ```
 Outputs appear in `1a/output/`.
 
+## Docker (all-in-one)
+
+Build the full system:
+
+```bash
+docker build --platform=linux/amd64 -t adobe-finale .
+```
+
+Run the System:
+```bash
+docker run -p 8080:8080 adobe-finale
+```
+
 ## Troubleshooting
 - If PyTorch install fails on macOS, ensure a recent pip and try a CPU build within the venv:
   ```bash
