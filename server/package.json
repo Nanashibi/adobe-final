@@ -1,0 +1,15 @@
+{
+  "name": "forty2-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts"
+  },
+  "dependencies": {
+    "hono": "^4.6.9",
+    "openai": "^4.67.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.19"
+  }
+}
