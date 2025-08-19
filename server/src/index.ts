@@ -892,6 +892,221 @@ app.post('/collections/:id/chat', async (c) => {
   }
 })
 
+// Generate podcast for a collection
+app.post('/collections/:id/podcast', async (c) => {
+  const id = c.req.param('id')
+  try {
+    const { llm_provider, tts_provider } = await c.req.json()
+    
+    const outputPath = path.join(outputRoot, id, 'challenge1b_output.json')
+    const output = JSON.parse(await readFile(outputPath, 'utf8'))
+    const { extracted_sections, subsection_analysis, metadata } = output
+    
+    // Get providers
+    let llmProvider = llm_provider || 'openai'
+    let ttsProvider = tts_provider || 'azure'
+    if (!llm_provider || !tts_provider) {
+      const inputPath = path.join(inputRoot, id, 'challenge1b_input.json')
+      try {
+        const inputData = JSON.parse(await readFile(inputPath, 'utf8'))
+        llmProvider = llm_provider || inputData.llm_provider || 'openai'
+        ttsProvider = tts_provider || inputData.tts_provider || 'azure'
+      } catch {
+        // Use defaults if input not found
+      }
+    }
+    
+    // Combine section data with refined text
+    const enrichedSections = extracted_sections.map((section: any) => {
+      const analysis = subsection_analysis.find((sub: any) => 
+        sub.document === section.document && sub.page_number === sub.page_number
+      )
+      return {
+        ...section,
+        refined_text: analysis?.refined_text || ''
+      }
+    })
+    
+    // Generate insights first
+    const insights = await generateInsights(
+      enrichedSections,
+      metadata.persona || 'Professional',
+      metadata.job_to_be_done || 'Document analysis',
+      llmProvider
+    )
+    
+    // Generate podcast script
+    const podcastScript = await generatePodcastScript(
+      enrichedSections,
+      metadata.persona || 'Professional',
+      metadata.job_to_be_done || 'Document analysis',
+      insights,
+      llmProvider
+    )
+    
+    // Generate audio
+    const audioFilename = `podcast_${id}_${Date.now()}.mp3`
+    const audioPath = path.join(outputRoot, id, audioFilename)
+    
+    const audioUrl = await generateTTSAudio(
+      podcastScript.transcript,
+      audioPath,
+      undefined, // default voice
+      ttsProvider
+    )
+    
+    if (audioUrl) {
+      podcastScript.audio_url = `/audio/${id}/${audioFilename}`
+    }
+    
+    // Save podcast data
+    const podcastPath = path.join(outputRoot, id, 'podcast_output.json')
+    await writeFile(podcastPath, JSON.stringify(podcastScript, null, 2))
+    
+    return c.json(podcastScript)
+    
+  } catch (error) {
+    console.error('Podcast generation error:', error)
+    return c.json({ 
+      error: 'Failed to generate podcast',
+      details: error.message 
+    })
+  }
+})
+
+// Generate insights for a collection
+app.post('/collections/:id/insights', async (c) => {
+  const id = c.req.param('id')
+  try {
+    const { llm_provider } = await c.req.json()
+    
+    const outputPath = path.join(outputRoot, id, 'challenge1b_output.json')
+    const output = JSON.parse(await readFile(outputPath, 'utf8'))
+    const { extracted_sections, subsection_analysis, metadata } = output
+    
+    // Get LLM provider
+    let llmProvider = llm_provider || 'openai'
+    if (!llm_provider) {
+      const inputPath = path.join(inputRoot, id, 'challenge1b_input.json')
+      try {
+        const inputData = JSON.parse(await readFile(inputPath, 'utf8'))
+        llmProvider = inputData.llm_provider || 'openai'
+      } catch {
+        // Use default if input not found
+      }
+    }
+    
+    // Combine section data with refined text
+    const enrichedSections = extracted_sections.map((section: any) => {
+      const analysis = subsection_analysis.find((sub: any) => 
+        sub.document === section.document && sub.page_number === section.page_number
+      )
+      return {
+        ...section,
+        refined_text: analysis?.refined_text || ''
+      }
+    })
+    
+    const insights = await generateInsights(
+      enrichedSections,
+      metadata.persona || 'Professional',
+      metadata.job_to_be_done || 'Document analysis',
+      llmProvider
+    )
+    
+    // Save insights for later use
+    const insightsPath = path.join(outputRoot, id, 'ai_insights.json')
+    await writeFile(insightsPath, JSON.stringify(insights, null, 2))
+    
+    return c.json(insights)
+    
+  } catch (error) {
+    console.error('Insights generation error:', error)
+    return c.json({ 
+      error: 'Failed to generate insights',
+      details: error.message 
+    })
+  }
+})
+
+// Text selection search endpoint
+app.post('/collections/:id/search-selection', async (c) => {
+  const id = c.req.param('id')
+  try {
+    const { selectedText, currentDocument, currentPage, llm_provider } = await c.req.json()
+    if (!selectedText) return c.text('Selected text required', 400)
+    
+    const outputPath = path.join(outputRoot, id, 'challenge1b_output.json')
+    const output = JSON.parse(await readFile(outputPath, 'utf8'))
+    const { extracted_sections, subsection_analysis, metadata } = output
+    
+    // Get LLM provider
+    let llmProvider = llm_provider || 'openai'
+    if (!llm_provider) {
+      const inputPath = path.join(inputRoot, id, 'challenge1b_input.json')
+      try {
+        const inputData = JSON.parse(await readFile(inputPath, 'utf8'))
+        llmProvider = inputData.llm_provider || 'openai'
+      } catch {
+        // Use default if input not found
+      }
+    }
+    
+    // Run text search using 1b pipeline
+    const pythonPath = await stat(path.join(oneBRoot, '.venv', 'bin', 'python')).then(() => 
+      path.join(oneBRoot, '.venv', 'bin', 'python')
+    ).catch(() => 'python3')
+    
+    const searchScript = path.join(oneBRoot, 'src', 'text_search.py')
+    
+    // Create search input
+    const searchInput = {
+      selected_text: selectedText,
+      current_document: currentDocument,
+      current_page: currentPage,
+      sections: subsection_analysis.map((sub: any) => ({
+        document: sub.document,
+        section_title: extracted_sections.find((s: any) => 
+          s.document === sub.document && s.page_number === sub.page_number
+        )?.section_title || '',
+        text: sub.refined_text,
+        page_number: sub.page_number
+      })),
+      llm_provider: llmProvider
+    }
+    
+    // Run search
+    const proc = Bun.spawn([pythonPath, searchScript], {
+      cwd: oneBRoot,
+      stdin: 'pipe',
+      stdout: 'pipe',
+      stderr: 'pipe',
+      env: { ...Bun.env, PYTHONPATH: path.join(oneBRoot, 'src') }
+    })
+    
+    // Send input and get results
+    const writer = proc.stdin.getWriter()
+    await writer.write(new TextEncoder().encode(JSON.stringify(searchInput)))
+    writer.close()
+    
+    const result = await new Response(proc.stdout).text()
+    const searchResults = JSON.parse(result)
+    
+    return c.json({
+      selected_text: selectedText,
+      results: searchResults
+    })
+    
+  } catch (error) {
+    console.error('Text selection search error:', error)
+    return c.json({ 
+      selected_text: 'Error', 
+      results: [],
+      error: error.message 
+    })
+  }
+})
+
 app.get('/collections/:id/combined', async (c) => {
   const id = c.req.param('id')
   try {
@@ -919,61 +1134,10 @@ app.get('/collections/:id/combined', async (c) => {
   }
 })
 
-// Serve static frontend files
-app.get('*', async (c) => {
-  const path = c.req.path
-  
-  // Skip API routes
-  if (path.startsWith('/collections') || path.startsWith('/pdfs') || path.startsWith('/health')) {
-    return c.notFound()
-  }
-  
-  try {
-    const fs = await import('fs/promises')
-    const pathModule = await import('path')
-    
-    // Determine file path
-    let filePath = pathModule.join(__dirname, '../public', path === '/' ? 'index.html' : path)
-    
-    // Check if file exists, otherwise serve index.html for SPA routing
-    try {
-      await fs.access(filePath)
-    } catch {
-      filePath = pathModule.join(__dirname, '../public/index.html')
-    }
-    
-    const content = await fs.readFile(filePath)
-    const ext = pathModule.extname(filePath).toLowerCase()
-    
-    // Set appropriate content type
-    const contentTypes: Record<string, string> = {
-      '.html': 'text/html',
-      '.js': 'application/javascript',
-      '.css': 'text/css',
-      '.json': 'application/json',
-      '.png': 'image/png',
-      '.jpg': 'image/jpeg',
-      '.gif': 'image/gif',
-      '.svg': 'image/svg+xml',
-      '.ico': 'image/x-icon'
-    }
-    
-    const contentType = contentTypes[ext] || 'text/plain'
-    
-    return new Response(content, {
-      headers: {
-        'Content-Type': contentType,
-        'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=31536000'
-      }
-    })
-  } catch (error) {
-    console.error('Static file serving error:', error)
-    return c.text('File not found', 404)
-  }
-})
+// API-only server - static files served by nginx
 
 export default {
-  port: parseInt(process.env.PORT || '8787'),
+  port: parseInt(process.env.PORT || '3000'),
   fetch: app.fetch,
   idleTimeout: 30 // 30 seconds instead of default 10
 }
