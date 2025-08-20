@@ -45,8 +45,8 @@ This is a **single-container solution** that runs all services using supervisord
 - `AZURE_TTS_KEY=<your_key>`
 - `AZURE_TTS_ENDPOINT=<your_endpoint>`
 
-### Optional
-- `ADOBE_EMBED_API_KEY=<your_key>` (for Adobe PDF Embed API)
+### Addobe Embed API Key
+- `ADOBE_EMBED_API_KEY=f991e8c76f754ecd8f599e223b57d885` (for Adobe PDF Embed API)
 
 ## 📁 File Structure
 
