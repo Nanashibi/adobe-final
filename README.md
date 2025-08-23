@@ -300,12 +300,19 @@ Outputs appear in `1a/output/`.
 Build the full system:
 
 ```bash
-docker build --platform=linux/amd64 -t adobe-finale .
+docker build -t adobe-final .
 ```
 
 Run the System:
 ```bash
-docker run -p 8080:8080 adobe-finale
+docker run -d -p 8080:8080 --name adobe-final-test adobe-final
+```
+
+Access the application at: `http://localhost:8080`
+
+To stop and remove the container:
+```bash
+docker stop adobe-final-test && docker rm adobe-final-test
 ```
 
 ## Troubleshooting
