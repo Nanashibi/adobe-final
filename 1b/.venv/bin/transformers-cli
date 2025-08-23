@@ -1,4 +1,4 @@
-#!/Users/prakhar/adobe-testing-final/1b/.venv/bin/python3
+#!/Users/prakhar/adobe-final/1b/.venv/bin/python3
 import sys
 from transformers.commands.transformers_cli import main_cli
 if __name__ == '__main__':

@@ -98,6 +98,8 @@ const oneBRoot = path.join(repoRoot, '1b')
 const inputRoot = path.join(oneBRoot, 'input')
 const outputRoot = path.join(oneBRoot, 'output')
 
+
+
 type JobStatus = 'queued' | 'running' | 'ready' | 'error'
 const jobs = new Map<string, { status: JobStatus; error?: string }>()
 
@@ -267,7 +269,7 @@ app.post('/quick-read', async (c) => {
 // Explain text endpoint - enhanced LLM explanations with mode selection
 app.post('/explain-text', async (c) => {
   try {
-    const { selectedText, mode, currentDocument, currentPage, llm_provider } = await c.req.json()
+    const { selectedText, mode, currentDocument, currentPage, llm_provider, readerId } = await c.req.json()
     
     if (!selectedText || selectedText.trim().length < 3) {
       return c.json({ explanation: "Please select more text for explanation." })
@@ -277,10 +279,10 @@ app.post('/explain-text', async (c) => {
     let llmProvider = llm_provider || 'openai';
 
     if (mode === 'pdf_context') {
-      // PDF Context Mode: Use document information to explain
+            // PDF Context Mode: Use document information to explain
       prompt = `You are an AI assistant helping users understand text they've selected from a PDF document.
 
-Selected text: "${selectedText}"
+      Selected text: "${selectedText}"
 Document: ${currentDocument}
 Page: ${currentPage}
 
@@ -288,7 +290,7 @@ Please provide a clear, helpful explanation that:
 1. Explains what this text means in the context of the document
 2. Connects it to the broader document content and purpose
 3. Mentions any important concepts, terms, or implications specific to this document
-4. Keeps the explanation concise but informative (3-5 sentences)
+4. Keeps the explanation concise but informative (2-3 sentences)
 
 Focus on being educational and helpful. If the text contains technical terms, explain them in the context of this document. If it references concepts, provide context from the document's domain.`
     } else {
@@ -301,7 +303,7 @@ Please provide a clear, helpful explanation that:
 1. Explains what this text means in simple terms
 2. Provides broader context or background knowledge from your general knowledge
 3. Mentions any important concepts, terms, or implications
-4. Keeps the explanation concise but informative (3-5 sentences)
+4. Keeps the explanation concise but informative (2-3 sentences)
 
 Focus on being educational and helpful. Use your general knowledge to provide context, examples, and explanations that would help someone understand this text better.`
     }
@@ -317,7 +319,7 @@ Focus on being educational and helpful. Use your general knowledge to provide co
           console.log(`🤖 Using ${llmProvider.toUpperCase()} for text explanation (${mode})`);
           
           const { callLLMScript } = await import('./llm.js');
-          explanation = await callLLMScript(prompt, 0.7, 400);
+          explanation = await callLLMScript(prompt, 0.7, 300); // Reduced tokens for faster response
           
           console.log(`✅ ${llmProvider.toUpperCase()} text explanation completed`);
           if (originalProvider) process.env.LLM_PROVIDER = originalProvider;
@@ -332,7 +334,7 @@ Focus on being educational and helpful. Use your general knowledge to provide co
             model: 'gpt-4o-mini',
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.7,
-            max_tokens: 400
+            max_tokens: 300 // Reduced for faster response
           });
           
           explanation = completion.choices[0]?.message?.content || "Unable to generate explanation.";
@@ -348,7 +350,7 @@ Focus on being educational and helpful. Use your general knowledge to provide co
             model: 'gpt-4o-mini',
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.7,
-            max_tokens: 400
+            max_tokens: 300 // Reduced for faster response
           });
           
           explanation = completion.choices[0]?.message?.content || "Unable to generate explanation.";
@@ -359,7 +361,7 @@ Focus on being educational and helpful. Use your general knowledge to provide co
           const originalProvider = process.env.LLM_PROVIDER;
           process.env.LLM_PROVIDER = 'gemini';
           const { callLLMScript } = await import('./llm.js');
-          explanation = await callLLMScript(prompt, 0.7, 400);
+          explanation = await callLLMScript(prompt, 0.7, 300); // Reduced tokens for faster response
           console.log(`✅ GEMINI fallback completed`);
           if (originalProvider) process.env.LLM_PROVIDER = originalProvider;
           else delete process.env.LLM_PROVIDER;

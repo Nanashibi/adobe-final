@@ -10,8 +10,8 @@ interface Config {
 const ConfigCtx = createContext<Config | undefined>(undefined);
 
 export const ConfigProvider = ({ children }: { children: React.ReactNode }) => {
-  // Hardcoded defaults - Adobe API key configured for hackathon
-  const [apiBaseUrl] = useState<string>("http://localhost:8787");
+  // Use nginx port 8080
+  const [apiBaseUrl] = useState<string>("http://localhost:8080");
   const [adobeClientId] = useState<string>("f991e8c76f754ecd8f599e223b57d885");
 
   const value = useMemo(

@@ -110,7 +110,8 @@ export default function QuickReader() {
           currentDocument: textSelection.document,
           currentPage: textSelection.page,
           mode: explanationMode,
-          llm_provider: llmProvider
+          llm_provider: llmProvider,
+          readerId: readerId // Pass readerId for PDF context mode
         })
       });
       
@@ -286,7 +287,7 @@ export default function QuickReader() {
                                 <Label htmlFor="explanation-text">Text to explain</Label>
                                 <textarea
                                   id="explanation-text"
-                                  className="w-full min-h-[100px] p-3 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                  className="w-full min-h-[100px] p-3 border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-black"
                                   placeholder="Enter or paste text from the PDF that you want explained..."
                                   autoFocus
                                 />

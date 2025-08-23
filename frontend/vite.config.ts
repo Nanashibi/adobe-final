@@ -4,8 +4,8 @@ import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
   server: {
-    host: "localhost",
-    port: 8080,
+    host: "0.0.0.0",
+    port: 5173,
   },
   plugins: [react()],
   resolve: {

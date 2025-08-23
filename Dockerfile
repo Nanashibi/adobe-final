@@ -1,3 +1,4 @@
+
 # Single container for Adobe Hackathon Finale
 FROM --platform=linux/amd64 python:3.11-slim
 
@@ -69,7 +70,7 @@ RUN cd server && bun install --production
 COPY frontend/package.json ./frontend/
 COPY frontend/bun.lock ./frontend/
 
-# Install frontend dependencies (with dev deps for running dev server)
+# Install frontend dependencies (with dev deps for building)
 RUN cd frontend && bun install
 
 # Copy all code
@@ -77,8 +78,8 @@ COPY 1b/ ./1b/
 COPY server/ ./server/
 COPY frontend/ ./frontend/
 
-# Create necessary directories
-RUN mkdir -p /app/1b/input /app/1b/output /app/1b/cache /var/log/supervisor /etc/supervisor/conf.d /credentials
+# Create necessary directories with proper permissions
+RUN mkdir -p /app/1b/input /app/1b/output /app/1b/cache /var/log/supervisor /etc/supervisor/conf.d /credentials /var/log/nginx
 
 # Copy supervisor configuration
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -89,6 +90,10 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Create startup script
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
+
+# Set proper permissions
+RUN chown -R www-data:www-data /var/log/nginx /var/log/supervisor
+RUN chmod -R 755 /app/1b/input /app/1b/output /app/1b/cache
 
 # Expose port
 EXPOSE 8080
